@@ -1,0 +1,15 @@
+{
+  "name": "fh-health",
+  "version": "0.0.0",
+  "description": "A wrapper to add a health endpoint to your cloud application based on nodeapp.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "Evan Shortiss",
+  "license": "BSD",
+  "dependencies": {
+    "async": "*"
+  }
+}
