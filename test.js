@@ -35,13 +35,13 @@ describe('Call module with no tests defiend', function() {
 describe('Call with a single non-critical test', function() {
   // Reset and add in a dummy test
   before(function() {
-    health.init(module.exports);
+    health.clearTests();
     health.addTest('Run the fake test that always passes', passingTest);
   });
 
   // Clear all tests
   after(function() {
-    health.init(module.exports);
+    health.clearTests();
   });
 
   it('Should return a status of "ok"', function(done) {
@@ -61,14 +61,14 @@ describe('Call with a single non-critical test', function() {
 describe('Call with a failing test', function() {
   // Reset and add in a dummy test
   before(function() {
-    health.init(module.exports);
+    health.clearTests();
     health.addTest('This is a fake test that always passes', passingTest);
     health.addTest('This is a fake test that always fails', failingTest);
   });
 
   // Clear all tests
   after(function() {
-    health.init(module.exports);
+    health.clearTests();
   });
 
   it('Should return "warn" status', function(done) {
@@ -88,14 +88,14 @@ describe('Call with a failing test', function() {
 describe('Call with a failing critical test', function() {
   // Reset and add in a dummy test
   before(function() {
-    health.init(module.exports);
+    health.clearTests();
     health.addTest('Run the fake test that always passes', passingTest);
     health.addCriticalTest('This is a fake test that always fails', failingTest);
   });
 
   // Clear all tests
   after(function() {
-    health.init(module.exports);
+    health.clearTests();
   });
 
   it('Should return "crit" status', function(done) {

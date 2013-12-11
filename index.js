@@ -14,7 +14,8 @@ module.exports = {
   init: init,
   runTests: runTests,
   addTest: addTest,
-  addCriticalTest: addCriticalTest
+  addCriticalTest: addCriticalTest,
+  clearTests: clearTests
 };
 
 var async = require('async');
@@ -41,10 +42,17 @@ var tests = [];
  * @param {Object} app
  */
 function init(app) {
-  tests = [];
   app.health = function(params, callback) {
     runTests(callback);
   };
+}
+
+
+/**
+ * Removes all added tests
+ */
+function clearTests() {
+  tests = [];
 }
 
 

@@ -19,7 +19,7 @@ function fnName(callback) {
 	return callback(err, result);
 }
 ```
-Where err is a string/object explaining the error and result is a string/object explaining the test result.
+Where err is a string/object explaining the error and result is a string/object explaining the test result if it passed.
 
 Critical tests are those that result in the health endpoint returning a "critical" status if they pass an *err* argument to their callback. 
 
@@ -59,4 +59,23 @@ This example if successful would return the following response:
         result: 'Successfully loaded google.com',
     }]
 }
+```
+
+##Usage Pattern
+You probably won't want all tests in main.js, so a better pattern would be to initialise the module from main.js  and then include test cases in a separate module which is perfectly valid.
+
+####main.js
+```
+var health = require('fh-health');
+health.init(module.exports);
+```
+
+####myOtherModule.js
+```
+health.addTest('Test some functionality…', function(callback) {
+	// Test code...
+});
+health.addCriticalTest('Test some critical functionality…', function(callback) {
+	// Test code...
+});
 ```
