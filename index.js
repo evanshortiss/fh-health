@@ -12,6 +12,7 @@
 
 module.exports = {
   init: init,
+  runTests: runTests,
   addTest: addTest,
   addCriticalTest: addCriticalTest
 };
@@ -40,7 +41,10 @@ var tests = [];
  * @param {Object} app
  */
 function init(app) {
-  app.health = runTests;
+  tests = [];
+  app.health = function(params, callback) {
+    runTests(callback);
+  };
 }
 
 
@@ -51,27 +55,38 @@ function init(app) {
 function runTests(callback) {
   var res = {
     'status': TEST_STATUSES.TYPES.OK,
-    'summary': TEST_STATUSES.TYPES.OK,
+    'summary': TEST_STATUSES.SUMMARIES.OK,
     'details': []
   };
 
+  if(tests.length == 0) {
+    return callback(null, res);
+  }
+
   async.each(tests, function(testItem, cb) {
-    testItem.fn(function(err, res) {
-      // Only run if status is not at critical, we don't want to overwrite critical status
-      if (res['status'] != TEST_STATUSES.TYPES.CRITICAL && typeof err != 'undefined' && err != null) {
+    testItem.fn(function(err, testResult) {
+      var testStatus = TEST_STATUSES.TYPES.OK;
+
+      if (typeof err != 'undefined' && err != null) {
         if (testItem.isCritical == true) {
           res['status'] = TEST_STATUSES.TYPES.CRITICAL;
           res['summary'] = TEST_STATUSES.SUMMARIES.CRITICAL;
-        } else {
+
+          testStatus = TEST_STATUSES.TYPES.CRITICAL;
+        } 
+        // We don't want to overwrite a critical overall status if it's set
+        else if(res['status'] != TEST_STATUSES.TYPES.CRITICAL) {
           res['status'] = TEST_STATUSES.TYPES.WARN;
           res['summary'] = TEST_STATUSES.SUMMARIES.WARN;
+
+          testStatus = TEST_STATUSES.TYPES.WARN;
         }
       }
 
       res['details'].push({
         description: testItem.desc,
-        result: res,
-        error: err
+        status: testStatus,
+        result: (typeof err != 'undefined' && err != null) ? err : testResult,
       });
 
       cb();
