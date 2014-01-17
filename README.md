@@ -4,7 +4,7 @@
 Module to add health checks to an application.
 
 ##Usage
-If running within fh-nodeapp the module should be initialised from your main.js file as shown below. This will clear any previously added test functions and setup a new endpoint in your application called "health", so ensure none of your endpoints are called health to avoid conflicts. Alternatively you can just call *health.init()* and manage the endpoint yourself.
+If running within fh-nodeapp the module should be initialised from your main.js file as shown below. This will setup a new endpoint in your application called "health", so ensure none of your endpoints are called health to avoid conflicts. Alternatively you can just call *health.init()* and manage the endpoint yourself.
 
 ```
 // With fh-nodeapp
@@ -73,7 +73,7 @@ This example if successful would return the following response:
 ```
 
 ##Usage Pattern
-You can include test cases in separate modules which is perfectly valid, or alternatively have all tests in a single file. Just make sure you call *health.init()* prior to adding your tests, if you call it afterwards they will be ignored.
+You can include test cases in separate modules which is perfectly valid, or alternatively have all tests in a single file.
 
 ####index.js
 ```

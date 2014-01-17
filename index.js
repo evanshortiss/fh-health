@@ -47,8 +47,6 @@ function init(app) {
       runTests(callback);
     };
   }
-
-  clearTests();
 }
 
 
