@@ -2,15 +2,15 @@
   "name": "fh-health",
   "version": "0.0.0",
   "description": "A wrapper to add a health endpoint to your cloud application based on nodeapp.",
-  "main": "index.js",
+  "main": "./index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha ./test.js"
   },
+  "keywords": ["feedhenry", "fh", "fh-health", "health"],
   "repository": "git@github.com:evanshortiss/fh-health.git",
   "author": "Evan Shortiss",
-  "license": "BSD",
   "dependencies": {
     "async": "*",
-    "request": "*"
+    "request": "2.29.0"
   }
 }

@@ -42,9 +42,13 @@ var tests = [];
  * @param {Object} app
  */
 function init(app) {
-  app.health = function(params, callback) {
-    runTests(callback);
-  };
+  if(app) {
+    app.health = function(params, callback) {
+      runTests(callback);
+    };
+  }
+
+  clearTests();
 }
 
 
@@ -93,7 +97,7 @@ function runTests(callback) {
 
       res['details'].push({
         description: testItem.desc,
-        status: testStatus,
+        test_status: testStatus,
         result: (typeof err != 'undefined' && err != null) ? err : testResult,
       });
 
