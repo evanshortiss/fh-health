@@ -1,5 +1,7 @@
 var assert = require('assert');
-var health = require('./index.js');
+var Health = require('./index.js');
+
+var health = new Health();
 health.init(module.exports);
 
 

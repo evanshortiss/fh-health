@@ -10,89 +10,102 @@
     }
  */
 
-module.exports = {
-  init: init,
-  runTests: runTests,
-  addTest: addTest,
-  addCriticalTest: addCriticalTest,
-  clearTests: clearTests
+module.exports = Health;
+
+var STATUS_TYPES = {
+  OK: 'ok',
+  WARN: 'warn',
+  CRIT: 'crit'
 };
 
-var async = require('async');
+var STATUS_TEXT = {
+  OK: 'No issues to report. All tests passed without error',
+  WARN: 'Some non-critical tests encountered issues. See the "details" object for specifics.',
+  CRITICAL: 'A critical test item enconutered an error. Please investigate this. See the "details" object for specifics.'
+};
 
-var TEST_STATUSES = {
-  TYPES: {
-    OK: 'ok',
-    WARN: 'warn',
-    CRITICAL: 'crit'
-  },
-  SUMMARIES: {
-    OK: 'No issues to report. All tests passed without error',
-    WARN: 'Some non-critical tests encountered issues. See the "details" object for specifics.',
-    CRITICAL: 'A critical test item enconutered an error. Please investigate this. See the "details" object for specifics.'
-  }
+
+var async = require('async'),
+  util = require('util'),
+  events = require('events');
+
+
+function Health() {
+  // Store tests related to this instance
+  this.tests = [];
+
+  events.EventEmitter.call(this);
 }
-
-// Hold test functions
-var tests = [];
+util.inherits(Health, events.EventEmitter);
 
 
 /**
  * Initialise the health component with a reference to main.js
  * @param {Object} app
  */
-function init(app) {
-  if(app) {
+Health.prototype.init = function(app) {
+  if (app) {
     app.health = function(params, callback) {
-      runTests(callback);
+      this.runTests(callback);
     };
   }
-}
+};
 
 
 /**
- * Removes all added tests
+ * Clear any added tests.
  */
-function clearTests() {
-  tests = [];
-}
+Health.prototype.clearTests = function() {
+  this.tests = [];
+  this.emit('testsCleared');
+};
 
 
 /**
  * Runs all tests provided in parallel
  * @param {Function} callback
  */
-function runTests(callback) {
+Health.prototype.runTests = function(callback) {
+  this.emit('testsStarted');
+
+  var self = this;
+  
   var res = {
-    'status': TEST_STATUSES.TYPES.OK,
-    'summary': TEST_STATUSES.SUMMARIES.OK,
+    'status': STATUS_TYPES.OK,
+    'summary': STATUS_TEXT.OK,
     'details': []
   };
 
-  if(tests.length == 0) {
+  if (this.tests.length == 0) {
     return callback(null, res);
   }
 
-  async.each(tests, function(testItem, cb) {
+  async.each(this.tests, function(testItem, cb) {
     testItem.fn(function(err, testResult) {
-      var testStatus = TEST_STATUSES.TYPES.OK;
+      // Default to ok status
+      var testStatus = STATUS_TYPES.OK;
 
-      if (typeof err != 'undefined' && err != null) {
+      if (err) {
+        // Critical test failed, status is critical
         if (testItem.isCritical == true) {
-          res['status'] = TEST_STATUSES.TYPES.CRITICAL;
-          res['summary'] = TEST_STATUSES.SUMMARIES.CRITICAL;
+          res['status'] = STATUS_TYPES.CRIT;
+          res['summary'] = STATUS_TEXT.CRITICAL;
 
-          testStatus = TEST_STATUSES.TYPES.CRITICAL;
-        } 
-        // We don't want to overwrite a critical overall status if it's set
-        else if(res['status'] != TEST_STATUSES.TYPES.CRITICAL) {
-          res['status'] = TEST_STATUSES.TYPES.WARN;
-          res['summary'] = TEST_STATUSES.SUMMARIES.WARN;
+          testStatus = STATUS_TYPES.CRIT;
+        }
+        // Normal test failed, status is warn
+        else {
+          testStatus = STATUS_TYPES.WARN;
 
-          testStatus = TEST_STATUSES.TYPES.WARN;
+          // We don't want to overwrite a critical overall status if one is set
+          if (res['status'] != STATUS_TYPES.CRIT) {
+            res['status'] = STATUS_TYPES.WARN;
+            res['summary'] = STATUS_TEXT.WARN;
+          }
         }
       }
 
+      // Update the response object
       res['details'].push({
         description: testItem.desc,
         test_status: testStatus,
@@ -102,9 +115,10 @@ function runTests(callback) {
       cb();
     });
   }, function() {
+    self.emit('testsFinished', res);
     return callback(null, res);
   });
-}
+};
 
 
 /**
@@ -113,13 +127,13 @@ function runTests(callback) {
  * @param {String}    desc
  * @param {Boolean}   isCritical
  */
-function _addTest(testFn, desc, isCritical) {
-  tests.push({
+Health.prototype._addTest = function(testFn, desc, isCritical) {
+  this.tests.push({
     isCritical: isCritical,
     desc: desc,
     fn: testFn,
   });
-}
+};
 
 
 /**
@@ -127,9 +141,9 @@ function _addTest(testFn, desc, isCritical) {
  * @param {Function}  testFn
  * @param {String}    desc
  */
-function addTest(desc, testFn) {
-  _addTest(testFn, desc, false);
-}
+Health.prototype.addTest = function(desc, testFn) {
+  this._addTest(testFn, desc, false);
+};
 
 
 /**
@@ -137,6 +151,6 @@ function addTest(desc, testFn) {
  * If this test returns an err the app is status is set to 'crit'
  * @param {Function} testFn
  */
-function addCriticalTest(desc, testFn) {
-  _addTest(testFn, desc, true)
-}
+Health.prototype.addCriticalTest = function(desc, testFn) {
+  this._addTest(testFn, desc, true)
+};

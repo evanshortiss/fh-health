@@ -1,6 +1,6 @@
 {
   "name": "fh-health",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A wrapper to add a health endpoint to your cloud application based on nodeapp.",
   "main": "./index.js",
   "scripts": {
@@ -10,7 +10,9 @@
   "repository": "git@github.com:evanshortiss/fh-health.git",
   "author": "Evan Shortiss",
   "dependencies": {
-    "async": "*",
+    "async": "0.2.9"
+  },
+  "devDependencies": {
     "request": "2.29.0"
   }
 }
