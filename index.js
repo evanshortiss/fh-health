@@ -102,7 +102,8 @@ function runTests(callback) {
       cb();
     });
   }, function() {
-    return callback(null, res);
+    // Return a JSON object formatted with single whitespaces
+    return callback(null, JSON.stringify(res, null, 1));
   });
 }
 

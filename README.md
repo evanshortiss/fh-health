@@ -1,7 +1,7 @@
 #fh-health
 
 
-Module to add health checks to an application. This is a health check to verify the running application (connectivity, etc.) is ok, and not a replacemnt for actual testing. The health check returns a JSON response formatted as shown:
+Module to add health checks to an application. This is a health check to verify the running application (connectivity, etc.) is ok, and not a replacemnt for actual testing. The health check returns a JSON response formatted as shown below (using a single whitespace between key and values):
 
 ```
 {
