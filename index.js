@@ -115,8 +115,8 @@ Health.prototype.runTests = function(callback) {
       cb();
     });
   }, function() {
-    self.emit('testsFinished', res);
-    return callback(null, res);
+    // Return a JSON object formatted with single whitespaces
+    return callback(null, JSON.stringify(res, null, 1));
   });
 };
 
