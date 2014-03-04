@@ -1,9 +1,16 @@
 var assert = require('assert');
-var Health = require('./index.js');
+var health = require('./index.js');
 
-var health = new Health();
 health.init(module.exports);
 
+/**
+ * Timeout test
+ */
+function timeoutTest(callback) {
+  setTimeout(function() {
+    return callback(null, 'This test will time out so this message won\'t be seen');
+  }, 20000);
+}
 
 /**
  * Fake test that always fails
@@ -25,6 +32,9 @@ describe('Call module with no tests defiend', function() {
     health.runTests(function(err, res) {
       assert(!err);
       assert(res);
+
+      res = JSON.parse(res);
+
       assert(res.summary);
       assert(res.details);
       assert(res.status == 'ok');
@@ -50,6 +60,9 @@ describe('Call with a single non-critical test', function() {
     health.runTests(function(err, res) {
       assert(!err);
       assert(res);
+
+      res = JSON.parse(res);
+
       assert(res.summary);
       assert(res.details);
       assert(res.status == 'ok');
@@ -77,6 +90,9 @@ describe('Call with a failing test', function() {
     health.runTests(function(err, res) {
       assert(!err);
       assert(res);
+
+      res = JSON.parse(res);
+
       assert(res.summary);
       assert(res.details);
       assert(res.status == 'warn');
@@ -104,10 +120,39 @@ describe('Call with a failing critical test', function() {
     health.runTests(function(err, res) {
       assert(!err);
       assert(res);
+
+      res = JSON.parse(res);
+
       assert(res.summary);
       assert(res.details);
       assert(res.status == 'crit');
       assert(res.details.length == 2);
+      done();
+    });
+  });
+});
+
+describe('Call with a timing out test', function() {
+  this.timeout(5000);
+  // Reset and add in a dummy test
+  before(function() {
+    health.clearTests();
+    health.setMaxRuntime(500);
+    health.addTest('Run the fake test that fails passes', timeoutTest);
+  });
+
+  it('Should return "warn" status', function(done) {
+    health.runTests(function(err, res) {
+      assert(!err);
+      assert(res);
+
+      res = JSON.parse(res);
+
+      assert(res.summary);
+      assert(res.details);
+      assert(res.status == 'warn');
+      assert(res.details.length == 1);
+      assert(res.details[0].result == 'The test didn\'t complete before the alotted time frame.');
       done();
     });
   });
