@@ -162,7 +162,11 @@ describe('Test the fh-health module', function() {
         assert(res.details.length == 3);
         // The last test is the one that has timed out
         assert(res.details[res.details.length - 1].result == 'The test didn\'t complete before the alotted time frame.');
-        done();
+
+        // Run tests again
+        health.runTests(function(err2, res2) {
+          done();
+        });
       });
     });
   });
