@@ -145,6 +145,8 @@ describe('Test the fh-health module', function() {
       health.clearTests();
       health.setMaxRuntime(100);
       health.addTest('Run the fake test times out.', timeoutTest);
+      health.addTest('Run the fake test that always fails.', failingTest);
+      health.addTest('Run the fake test that always passes.', passingTest);
     });
 
     it('Should return "warn" status', function(done) {
@@ -157,9 +159,9 @@ describe('Test the fh-health module', function() {
         assert(res.summary);
         assert(res.details);
         assert(res.status == 'warn');
-        assert(res.details.length == 1);
-        assert(typeof res.details[0].runtime === 'number');
-        assert(res.details[0].result == 'The test didn\'t complete before the alotted time frame.');
+        assert(res.details.length == 3);
+        // The last test is the one that has timed out
+        assert(res.details[res.details.length - 1].result == 'The test didn\'t complete before the alotted time frame.');
         done();
       });
     });
