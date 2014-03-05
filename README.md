@@ -11,6 +11,17 @@ Module to add health checks to an application. This is a health check to verify 
 }
 ```
 
+The "details" Array contains objects describing the results of each test which are formatted like so.
+
+```
+{
+  "description": <The description provided to addTest or addCriticalTest function>,
+  "test_status": <ok|warn|crit>,
+  "result": <The result returned from your callback to either the err or result paramater>,
+  "runtime": <Time taken in milliseconds to run the test item>
+}
+```
+
 
 ##Usage
 If running within fh-nodeapp the module should be initialised from your main.js file as shown below. This will setup a new endpoint in your application called "health", so ensure none of your endpoints are called health to avoid conflicts. Alternatively you can just call *health.init()* and manage the endpoint yourself.
@@ -21,10 +32,14 @@ var health = require('fh-health');
 // This will add a health endpoint automatically.
 health.init(module.exports);
 
-// Standard usage
+// Standard usage with an express app
 var health = require('fh-health');
 health.init();
-health.runTests(callback);
+app.get('/health', function(req, res) {
+  health.runTests(function(err, testResult) {
+    res.end(testResult);
+  });
+});
 ```
 
 ##Adding Tests
@@ -82,6 +97,7 @@ This example if successful would return the following response:
         description: 'Test a request to www.google.com is successful',
         test_status: 'ok',
         result: 'Successfully loaded google.com',
+        runtime: 2106
     }]
 }
 ```
@@ -96,10 +112,38 @@ If this example encountered a status code that wasn't *200* the following would 
         description: 'Test a request to www.google.com is successful',
         test_status: 'warn',
         result: 'Google responded with a status code of {CODE}',
+        runtime: 2341
     }]
 }
 ```
 
+##Timeouts
+The default timeout for running tests is 25 seconds. After 25 seconds the test runner will ignore results returned from any unfinished tests.
+
+The timeout can be modified like so:
+
+```
+// Set the max running time to 60 seconds
+var health = require('fh-health');
+health.setMaxRuntime( (60*1000) );
+```
+
+If a timeout occurs on a critical test then the overall status returned will be "crit". If a timeout occurs on a regular test then a status of "warn" will be returned.
+
+```
+{
+  "status": "warn",
+  "summary": "Some non-critical tests encountered issues. See the "details" object for specifics.",
+  "details": [
+    {
+      "description": "Check connectivity to component XYZ.",
+      "test_status": "warn",
+      "result": "The test didn't complete before the alotted time frame.",
+      "runtime": 25000
+    }
+  ]
+}
+```
 
 ##Usage Pattern
 You can include test cases in separate modules which is perfectly valid, or alternatively have all tests in a single file.

@@ -144,7 +144,7 @@ describe('Test the fh-health module', function() {
     before(function() {
       health.clearTests();
       health.setMaxRuntime(100);
-      health.addTest('Run the fake test that fails passes', timeoutTest);
+      health.addTest('Run the fake test times out.', timeoutTest);
     });
 
     it('Should return "warn" status', function(done) {
