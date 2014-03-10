@@ -9,21 +9,25 @@ health.init(module.exports);
 function timeoutTest(callback) {
   setTimeout(function() {
     return callback(null, 'This test will time out so this message won\'t be seen');
-  }, 500);
+  }, 30000);
 }
 
 /**
  * Fake test that always fails
  */
 function failingTest(callback) {
-  return callback('This fake test that always fails by returning this string as an error!');
+  setTimeout(function() {
+    return callback('This fake test that always fails by returning this string as an error!');
+  }, 50);
 }
 
 /**
  * Fake test that always passes
  */
 function passingTest(callback) {
-  return callback(null, 'This is a test which will always pass by returning this string to the result callback param.');
+  setTimeout(function() {
+    return callback(null, 'This is a test which will always pass by returning this string to the result callback param.');
+  }, 50);
 }
 
 describe('Test the fh-health module', function() {
@@ -145,6 +149,7 @@ describe('Test the fh-health module', function() {
       health.clearTests();
       health.setMaxRuntime(100);
       health.addTest('Run the fake test times out.', timeoutTest);
+      health.addTest('Run the fake test that always fails.', failingTest);
       health.addTest('Run the fake test that always passes.', passingTest);
     });
 
@@ -158,16 +163,51 @@ describe('Test the fh-health module', function() {
         assert(res.summary);
         assert(res.details);
         assert(res.status == 'warn');
-        assert(res.details.length == 2);
+        assert(res.details.length == 3);
         // The last test is the one that has timed out
         assert(res.details[res.details.length - 1].result == 'The test didn\'t complete before the alotted time frame.');
 
-        // Run tests again
-        health.setMaxRuntime(3000);
-        health.runTests(function(err2, res2) {
-          done();
-        });
+        done();
       });
+    });
+  });
+
+  describe('Call the runTest fn twice with different callbacks.', function() {
+    before(function(){
+      health.clearTests();
+      health.setMaxRuntime(1000);
+      health.addTest('Run the fake test that always passes.', passingTest);
+    });
+
+    it('Should pass and both callbacks receive the same result', function(done) {
+      var res1 = null,
+        res2 = null,
+        finished = false;
+
+      function cb1(err, res) {
+        assert(!err);
+        res1 = res;
+
+        if(finished === true) {
+          done();
+        } else {
+          finished = true;
+        }
+      }
+
+      function cb2(err, res) {
+        assert(!err);
+        res2 = res;
+
+        if(finished === true) {
+          done();
+        } else {
+          finished = true;
+        }
+      }
+
+      health.runTests(cb1);
+      health.runTests(cb2);
     });
   });
 
