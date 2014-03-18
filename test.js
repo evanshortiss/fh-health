@@ -32,8 +32,26 @@ function passingTest(callback) {
 
 describe('Test the fh-health module', function() {
 
+  describe('Test init will add test to an exports object', function() {
+    it('Should run tests', function(done) {
+      var fake_nodeapp = {}
+      health.init(fake_nodeapp);
+      health.addTest('Run the fake test that always passes', passingTest);
+
+      fake_nodeapp.health({}, function(err, res) {
+        assert(!err);
+        assert(res);
+        done();
+      });
+    });
+  });
+
   // Test the getSection function with valid input
   describe('Call module with no tests defiend', function() {
+    before(function() {
+      health.clearTests();
+    });
+
     it('Should return an ok status', function(done) {
       health.runTests(function(err, res) {
         assert(!err);

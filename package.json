@@ -1,6 +1,6 @@
 {
   "name": "fh-health",
-  "version": "0.0.4",
+  "version": "0.0.41",
   "description": "A wrapper to add a health endpoint to your cloud application based on nodeapp.",
   "main": "./index.js",
   "scripts": {
