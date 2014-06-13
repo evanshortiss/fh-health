@@ -1,42 +1,73 @@
-var assert = require('assert');
-var health = require('./index.js');
+var assert = require('assert')
+  , TestRunner = require('../lib/TestRunner');
 
-health.init(module.exports);
 
-/**
- * Timeout test
- */
+
 function timeoutTest(callback) {
   setTimeout(function() {
     return callback(null, 'This test will time out so this message won\'t be seen');
   }, 30000);
 }
 
-/**
- * Fake test that always fails
- */
 function failingTest(callback) {
   setTimeout(function() {
     return callback('This fake test that always fails by returning this string as an error!');
   }, 50);
 }
 
-/**
- * Fake test that always passes
- */
 function passingTest(callback) {
   setTimeout(function() {
     return callback(null, 'This is a test which will always pass by returning this string to the result callback param.');
   }, 50);
 }
 
-describe('Test the fh-health module', function() {
+describe('TestRunner', function() {
+
+  describe('#init', function () {
+    it('Should bind a health function to an object', function () {
+      var obj = {};
+      TestRunner.init(obj);
+
+      assert.equal(typeof obj.health, 'function');
+    });
+
+    it('Should not throw any error', function () {
+      TestRunner.init();
+    });
+  });
+
+  describe('#silent', function () {
+    it('Shouldn\'t throw an error', function () {
+      TestRunner.silent(false);
+    });
+
+    it('Shouldn\'t throw an error', function () {
+      TestRunner.silent(true);
+    });
+  });
+
+  describe('#clearTests', function () {
+    it('Should not cause an error', function () {
+      TestRunner.clearTests();
+    });
+  });
+
+  describe('#isRunning', function () {
+    it('Should return false', function () {
+      assert.equal(TestRunner.isRunning(), false);
+    });
+
+    it('Should return true', function (done) {
+      TestRunner.runTests(done);
+      assert.equal(TestRunner.isRunning(), false);
+    });
+  });
 
   describe('Test init will add test to an exports object', function() {
     it('Should run tests', function(done) {
       var fake_nodeapp = {}
-      health.init(fake_nodeapp);
-      health.addTest('Run the fake test that always passes', passingTest);
+      TestRunner.init(fake_nodeapp);
+      TestRunner.addTest('Run the fake test that always passes', passingTest);
 
       fake_nodeapp.health({}, function(err, res) {
         assert(!err);
@@ -47,13 +78,15 @@ describe('Test the fh-health module', function() {
   });
 
   // Test the getSection function with valid input
-  describe('Call module with no tests defiend', function() {
-    before(function() {
-      health.clearTests();
+  describe('#run', function() {
+    beforeEach(function () {
+      TestRunner.clearTests();
     });
 
-    it('Should return an ok status', function(done) {
-      health.runTests(function(err, res) {
+    it('Should return an ok status with no tests added', function(done) {
+      TestRunner.clearTests();
+
+      TestRunner.runTests(function(err, res) {
         assert(!err);
         assert(res);
 
@@ -66,22 +99,11 @@ describe('Test the fh-health module', function() {
         done();
       });
     });
-  });
 
-  describe('Call with a single non-critical test', function() {
-    // Reset and add in a dummy test
-    before(function() {
-      health.clearTests();
-      health.addTest('Run the fake test that always passes', passingTest);
-    });
+    it('Should return a status of "ok" for a single test', function(done) {
+      TestRunner.addTest('Run the fake test that always passes', passingTest);
 
-    // Clear all tests
-    after(function() {
-      health.clearTests();
-    });
-
-    it('Should return a status of "ok"', function(done) {
-      health.runTests(function(err, res) {
+      TestRunner.runTests(function(err, res) {
         assert(!err);
         assert(res);
 
@@ -95,24 +117,12 @@ describe('Test the fh-health module', function() {
         done();
       });
     });
-  });
-
-
-  describe('Call with a failing test', function() {
-    // Reset and add in a dummy test
-    before(function() {
-      health.clearTests();
-      health.addTest('This is a fake test that always passes', passingTest);
-      health.addTest('This is a fake test that always fails', failingTest);
-    });
-
-    // Clear all tests
-    after(function() {
-      health.clearTests();
-    });
 
     it('Should return "warn" status', function(done) {
-      health.runTests(function(err, res) {
+      TestRunner.addTest('This is a fake test that always passes', passingTest);
+      TestRunner.addTest('This is a fake test that always fails', failingTest);
+
+      TestRunner.runTests(function(err, res) {
         assert(!err);
         assert(res);
 
@@ -127,24 +137,12 @@ describe('Test the fh-health module', function() {
         done();
       });
     });
-  });
-
-
-  describe('Call with a failing critical test', function() {
-    // Reset and add in a dummy test
-    before(function() {
-      health.clearTests();
-      health.addTest('Run the fake test that always passes', passingTest);
-      health.addCriticalTest('This is a fake test that always fails', failingTest);
-    });
-
-    // Clear all tests
-    after(function() {
-      health.clearTests();
-    });
 
     it('Should return "crit" status', function(done) {
-      health.runTests(function(err, res) {
+      TestRunner.addTest('Run the fake test that always passes', passingTest);
+      TestRunner.addCriticalTest('This is a fake test that always fails', failingTest);
+
+      TestRunner.runTests(function(err, res) {
         assert(!err);
         assert(res);
 
@@ -159,20 +157,14 @@ describe('Test the fh-health module', function() {
         done();
       });
     });
-  });
-
-  describe('Call with a timing out test', function() {
-    // Reset and add in a dummy test
-    before(function() {
-      health.clearTests();
-      health.setMaxRuntime(100);
-      health.addTest('Run the fake test times out.', timeoutTest);
-      health.addTest('Run the fake test that always fails.', failingTest);
-      health.addTest('Run the fake test that always passes.', passingTest);
-    });
 
     it('Should return "warn" status', function(done) {
-      health.runTests(function(err, res) {
+      TestRunner.setMaxRuntime(100);
+      TestRunner.addTest('Run the fake test times out.', timeoutTest);
+      TestRunner.addTest('Run the fake test that always fails.', failingTest);
+      TestRunner.addTest('Run the fake test that always passes.', passingTest);
+
+      TestRunner.runTests(function(err, res) {
         assert(!err);
         assert(res);
 
@@ -188,16 +180,11 @@ describe('Test the fh-health module', function() {
         done();
       });
     });
-  });
-
-  describe('Call the runTest fn twice with different callbacks.', function() {
-    before(function(){
-      health.clearTests();
-      health.setMaxRuntime(1000);
-      health.addTest('Run the fake test that always passes.', passingTest);
-    });
 
     it('Should pass and both callbacks receive the same result', function(done) {
+      TestRunner.setMaxRuntime(1000);
+      TestRunner.addTest('Run the fake test that always passes.', passingTest);
+
       var res1 = null,
         res2 = null,
         finished = false;
@@ -224,9 +211,8 @@ describe('Test the fh-health module', function() {
         }
       }
 
-      health.runTests(cb1);
-      health.runTests(cb2);
+      TestRunner.runTests(cb1);
+      TestRunner.runTests(cb2);
     });
   });
-
 });
