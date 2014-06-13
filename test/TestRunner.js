@@ -78,7 +78,7 @@ describe('TestRunner', function() {
   });
 
   // Test the getSection function with valid input
-  describe('#run', function() {
+  describe('#runTests', function() {
     beforeEach(function () {
       TestRunner.clearTests();
     });
