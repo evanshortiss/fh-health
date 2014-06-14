@@ -62,5 +62,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['format']);
   grunt.registerTask('format', ['lintspaces', 'jshint', 'column_lint']);
-  grunt.registerTask('test', ['format', 'mocha_istanbul:coveralls', 'mocha_istanbul:coverage']);
+  grunt.registerTask('test', ['format', 'mocha_istanbul:coveralls',
+    'mocha_istanbul:coverage']);
 };
