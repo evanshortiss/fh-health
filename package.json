@@ -6,11 +6,17 @@
   "scripts": {
     "test": "grunt test"
   },
-  "keywords": ["feedhenry", "fh", "fh-health", "health"],
+  "keywords": [
+    "feedhenry",
+    "fh",
+    "fh-health",
+    "health"
+  ],
   "repository": "git@github.com:evanshortiss/fh-health.git",
   "author": "Evan Shortiss",
   "dependencies": {
-    "async": "0.2.9"
+    "async": "0.2.9",
+    "winston": "^0.8.1"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
