@@ -14,7 +14,7 @@ module.exports = function(grunt) {
     jshint: {
       src: ['./lib'],
       options: {
-        jshintrc: './jshintrc.js'
+        jshintrc: './.jshintrc'
       }
     },
 
