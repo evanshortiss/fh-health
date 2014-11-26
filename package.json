@@ -16,6 +16,7 @@
   "author": "Evan Shortiss",
   "dependencies": {
     "async": "0.2.9",
+    "moment": "^2.8.4",
     "winston": "^0.8.1"
   },
   "devDependencies": {
