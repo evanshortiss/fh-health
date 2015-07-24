@@ -16,6 +16,7 @@
   "author": "Evan Shortiss",
   "dependencies": {
     "async": "0.2.9",
+    "fhlog": "^0.12.1",
     "winston": "^0.8.1"
   },
   "devDependencies": {

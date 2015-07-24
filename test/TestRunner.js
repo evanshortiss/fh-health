@@ -36,16 +36,6 @@ describe('TestRunner', function() {
     });
   });
 
-  describe('#silent', function () {
-    it('Shouldn\'t throw an error', function () {
-      TestRunner.silent(false);
-    });
-
-    it('Shouldn\'t throw an error', function () {
-      TestRunner.silent(true);
-    });
-  });
-
   describe('#clearTests', function () {
     it('Should not cause an error', function () {
       TestRunner.clearTests();
@@ -58,6 +48,7 @@ describe('TestRunner', function() {
     });
 
     it('Should return true', function (done) {
+      console.log('OKOKOK', TestRunner.isRunning())
       TestRunner.runTests(done);
       assert.equal(TestRunner.isRunning(), false);
     });
