@@ -1,5 +1,8 @@
 #fh-health
 
+[![build-status](https://travis-ci.org/feedhenry-staff/fh-health.svg?branch=master)
+](https://travis-ci.org/feedhenry-staff/fh-health.svg?branch=master)[![version](https://badge.fury.io/js/fh-health.svg)
+](https://badge.fury.io/js/fh-health.svg)
 
 Module to add health checks to an application. This is a health check to 
 verify the running application (connectivity, etc.) is ok, and not a replacemnt 
