@@ -1,7 +1,10 @@
 #fh-health
 
 
-Module to add health checks to an application. This is a health check to verify the running application (connectivity, etc.) is ok, and not a replacemnt for actual testing. The health check returns a JSON response formatted as shown below (using a single whitespace between key and values):
+Module to add health checks to an application. This is a health check to 
+verify the running application (connectivity, etc.) is ok, and not a replacemnt 
+for actual testing. The health check returns a JSON response formatted as shown 
+below (using a single whitespace between key and values):
 
 ```json
 {
@@ -11,7 +14,8 @@ Module to add health checks to an application. This is a health check to verify 
 }
 ```
 
-The "details" Array contains objects describing the results of each test which are formatted like so.
+The "details" Array contains objects describing the results of each test which 
+are formatted like so.
 
 ```json
 {
@@ -24,7 +28,11 @@ The "details" Array contains objects describing the results of each test which a
 
 
 ##Usage
-If running within fh-nodeapp the module should be initialised from your main.js file as shown below. This will setup a new endpoint in your application called "health", so ensure none of your endpoints are called health to avoid conflicts. Alternatively you can just call *health.init()* and manage the endpoint yourself.
+If running within fh-nodeapp the module should be initialised from your main.js 
+file as shown below. This will setup a new endpoint in your application called 
+"health", so ensure none of your endpoints are called health to avoid 
+conflicts. Alternatively you can just call *health.init()* and manage the 
+endpoint yourself.
 
 ```javascript
 // With fh-nodeapp
@@ -43,7 +51,9 @@ app.get('/health', function(req, res) {
 ```
 
 ##Adding Tests
-Adding tests is done via two functions. *addTest(description, testFn)* and *addCriticalTest(description, testFn)*. The *testFn* function is a function that must have the format:
+Adding tests is done via two functions. *addTest(description, testFn)* and 
+*addCriticalTest(description, testFn)*. The *testFn* function is a function 
+that must have the format:
 
 ```javascript
 function testFn(callback) {
@@ -60,10 +70,13 @@ health.addCriticalTest('Test something important', testFn);
 ```
 
 ###Critical Tests - *addCriticalTest(name, fn)*
-Are those that result in the health endpoint returning a "crit" status if they pass a non null *err* argument (the first argument) to their callback. If a critical test has no issues then they have a status of "ok".
+Are those that result in the health endpoint returning a "crit" status if they 
+pass a non null *err* argument (the first argument) to their callback. If a 
+critical test has no issues then they have a status of "ok".
 
 ### Standard Tests - *addTest(name, fn)*
-Added via *addTest* are tests that can return an error to their callback without causing a "crit" status, but will instead cause a "warn" status.
+Added via *addTest* are tests that can return an error to their callback 
+without causing a "crit" status, but will instead cause a "warn" status.
 
 
 ##Simple Example
@@ -102,12 +115,15 @@ This example if successful would return the following response:
 }
 ```
 
-If this example encountered a status code that wasn't *200* the following would be returned:
+If this example encountered a status code that wasn't *200* the following would 
+be returned:
+
 
 ```javascript
 {
     status: 'warn',
-    summary: 'Some non-critical tests encountered issues. See the "details" object for specifics.',
+    summary: 'Some non-critical tests encountered issues. See the "details" 
+    object for specifics.',
     details: [{
         description: 'Test a request to www.google.com is successful',
         test_status: 'warn',
@@ -118,7 +134,8 @@ If this example encountered a status code that wasn't *200* the following would 
 ```
 
 ##Timeouts
-The default timeout for running tests is 25 seconds. After 25 seconds the test runner will ignore results returned from any unfinished tests.
+The default timeout for running tests is 25 seconds. After 25 seconds the test 
+runner will ignore results returned from any unfinished tests.
 
 The timeout can be modified like so:
 
@@ -128,7 +145,9 @@ var health = require('fh-health');
 health.setMaxRuntime( (60*1000) );
 ```
 
-If a timeout occurs on a critical test then the overall status returned will be "crit". If a timeout occurs on a regular test then a status of "warn" will be returned.
+If a timeout occurs on a critical test then the overall status returned will 
+be "crit". If a timeout occurs on a regular test then a status of "warn" will 
+be returned.
 
 ```json
 {
@@ -146,7 +165,8 @@ If a timeout occurs on a critical test then the overall status returned will be 
 ```
 
 ##Usage Pattern
-You can include test cases in separate modules which is perfectly valid, or alternatively have all tests in a single file.
+You can include test cases in separate modules which is perfectly valid, or 
+alternatively have all tests in a single file.
 
 ####index.js
 
