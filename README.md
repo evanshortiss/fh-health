@@ -62,7 +62,7 @@ that must have the format:
 function testFn(callback) {
   // ...Do some stuff...
   // ...................
-  if(anErrorOccured) {
+  if(anErrorOccurred) {
     return callback('Oh crap!', null);
   } else {
     return callback(null, 'All good here!');
@@ -181,7 +181,7 @@ var app = express();
 app.get('/health', function(req, res) {
   health.runTests(function(err, data) {
     if(err) {
-      res.status(500).end('An error occured.');
+      res.status(500).end('An error occurred.');
     } else {
       res.json(data);
     }
