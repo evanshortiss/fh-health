@@ -3,6 +3,7 @@
   "version": "0.3.1",
   "description": "A wrapper to add a health endpoint to your cloud application based on nodeapp.",
   "main": "./lib/TestRunner.js",
+  "files": ["lib/"],
   "scripts": {
     "test": "grunt test"
   },
