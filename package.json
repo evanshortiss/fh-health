@@ -1,6 +1,6 @@
 {
   "name": "fh-health",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A wrapper to add a health endpoint to your cloud application based on nodeapp.",
   "main": "./lib/TestRunner.js",
   "files": ["lib/"],
