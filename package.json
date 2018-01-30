@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "async": "0.2.9",
-    "fhlog": "^0.13.0"
+    "fhlog": "^0.13.1"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
