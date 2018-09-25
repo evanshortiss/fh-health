@@ -11,13 +11,6 @@ module.exports = function(grunt) {
       }
     },
 
-    jshint: {
-      src: ['./lib'],
-      options: {
-        jshintrc: './.jshintrc'
-      }
-    },
-
     lintspaces: {
       javascript: {
         src: ['./lib'],
@@ -61,7 +54,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-istanbul');
 
   grunt.registerTask('default', ['format']);
-  grunt.registerTask('format', ['lintspaces', 'jshint', 'column_lint']);
+  grunt.registerTask('format', ['lintspaces', 'column_lint']);
   grunt.registerTask('test', ['format', 'mocha_istanbul:coveralls',
     'mocha_istanbul:coverage']);
 };
